@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
 import { 
   createInspirationAction, 
-  toggleFavoriteAction 
+  toggleFavoriteAction,
+  deleteInspirationAction   // ← schon vorhanden
 } from '@/actions/inspirationActions';
 import { logoutUserAction } from '@/actions/authActions';
 
@@ -17,7 +18,7 @@ interface Pin {
   isFavorite?: boolean; 
 }
 
-const CATEGORIES = ['Alle', 'Gespeichert', 'Entdecken', 'Tattoo', 'Mode', 'Sport', 'Natur', 'Kunst', 'Essen', 'Reisen', 'Andere'] as const;
+const CATEGORIES = ['Alle', 'Gespeichert', 'Entdecken', 'Tattoo', 'Mode','Kosmetik', 'Sport', 'Natur', 'Kunst', 'Essen', 'Reisen', 'Andere'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 export default function ClientPage({ initialPins, currentUserId }: { initialPins: Pin[], currentUserId: number | null }) {
@@ -105,36 +106,69 @@ export default function ClientPage({ initialPins, currentUserId }: { initialPins
     // Hintergrund: Hellgrau mit weichem Verlauf für den Glaseffekt
     <div className="flex min-h-screen bg-[#f8fafc] text-black font-sans transition-all duration-500">
       
-      {/* SIDEBAR - Heller Glassmorphism */}
-      <aside className="w-20 bg-white/40 backdrop-blur-xl border-r border-white/40 fixed h-full flex flex-col items-center py-8 z-[250]">
-        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center mb-10 cursor-pointer hover:scale-110 transition-all shadow-md" onClick={() => setFilter('Alle')}>
+      {/* SIDEBAR - Heller Glassmorphism + DICKER SCHWARZER TRENNSTRICH + FARBIGE ICONS */}
+      <aside className="w-20 bg-gradient-to-b from-white/90 to-white/60 backdrop-blur-2xl border-r-4 border-black shadow-[4px_0_16px_-4px_rgba(0,0,0,0.12)] fixed h-full flex flex-col items-center py-8 z-[250]">
+        
+        {/* Logo bleibt genau so (sky-400) */}
+        <div className="w-10 h-10 bg-sky-400 rounded-full flex items-center justify-center mb-10 cursor-pointer hover:scale-110 transition-all shadow-md" onClick={() => setFilter('Alle')}>
           <span className="text-white text-xl font-black italic">I</span>
         </div>
         
         <nav className="flex flex-col gap-6 flex-1 items-center text-gray-400">
+          
+          {/* 1. HOME ICON → Gelb/Orange (amber-400) */}
           <div className="relative group">
-            <button onClick={() => setFilter('Alle')} className={`p-3 rounded-2xl transition-all ${filter === 'Alle' ? 'text-black bg-white/60 shadow-sm' : 'hover:bg-white/40 hover:text-black'}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" /><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" /></svg>
+            <button 
+              onClick={() => setFilter('Alle')} 
+              className={`p-3 rounded-2xl transition-all ${filter === 'Alle' ? 'bg-white/60 shadow-sm' : 'hover:bg-white/40'}`}
+            >
+              <div className="w-9 h-9 bg-amber-400 rounded-2xl flex items-center justify-center shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                  <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                  <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          {/* 2. ENTDECKEN ICON → Grün (emerald-400) */}
+          <div className="relative group">
+            <button 
+              onClick={() => setFilter('Entdecken')} 
+              className={`p-3 rounded-2xl transition-all ${filter === 'Entdecken' ? 'bg-white/60 shadow-sm' : 'hover:bg-white/40'}`}
+            >
+              <div className="w-9 h-9 bg-emerald-400 rounded-2xl flex items-center justify-center shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-white">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15l3-6 3 6-3-6z" />
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          {/* 3. ADD ICON → Lila (violet-400) */}
+          <div className="relative group">
+            <button 
+              onClick={() => setIsAddPinOpen(true)} 
+              className="p-3 hover:bg-white/40 rounded-2xl transition-all"
+            >
+              <div className="w-9 h-9 bg-violet-400 rounded-2xl flex items-center justify-center shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                  <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
+                </svg>
+              </div>
             </button>
           </div>
           
-          <div className="relative group">
-            <button onClick={() => setFilter('Entdecken')} className={`p-3 rounded-2xl transition-all ${filter === 'Entdecken' ? 'text-black bg-white/60 shadow-sm' : 'hover:bg-white/40 hover:text-black'}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path d="M9 15l3-6 3 6-3-6z" /></svg>
-            </button>
-          </div>
-
-          <div className="relative group">
-            <button onClick={() => setIsAddPinOpen(true)} className="p-3 hover:bg-white/40 hover:text-black rounded-2xl transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" /></svg>
-            </button>
-          </div>
         </nav>
 
+        {/* Logout bleibt unverändert */}
         <div className="flex flex-col gap-4 mb-4 text-gray-400">
           <div className="relative group">
             <button onClick={() => logoutUserAction()} className="p-3 hover:bg-black/5 rounded-2xl transition-all hover:text-red-500">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+              </svg>
             </button>
           </div>
         </div>
@@ -213,7 +247,7 @@ export default function ClientPage({ initialPins, currentUserId }: { initialPins
         </main>
       </div>
 
-      {/* DETAIL MODAL - Hell & Gläsern */}
+      {/* DETAIL MODAL - mit neuem Löschen-Button */}
       {selectedPin && (
         <div className="fixed inset-0 bg-white/60 backdrop-blur-xl z-[300] overflow-y-auto" onClick={() => setSelectedPin(null)}>
           <div className="max-w-[1400px] mx-auto px-6 py-12 relative" onClick={e => e.stopPropagation()}>
@@ -243,6 +277,29 @@ export default function ClientPage({ initialPins, currentUserId }: { initialPins
                         >
                           {selectedPin.isFavorite ? "Gemerkt" : "Merken"}
                         </button>
+
+                        {/* === NEUER LÖSCHEN-BUTTON (nur bei eigenen Pins) === */}
+                        {currentUserId && selectedPin.userId === currentUserId && (
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (!confirm("Pin wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.")) return;
+                              
+                              const res = await deleteInspirationAction(selectedPin.id);
+                              if (res.success) {
+                                setSelectedPin(null);
+                              } else {
+                                alert("Fehler beim Löschen des Pins.");
+                              }
+                            }}
+                            className="px-8 py-3.5 rounded-full font-black text-sm transition-all shadow-md active:scale-95 border border-red-400 bg-red-50 text-red-600 hover:bg-red-100 flex items-center gap-2"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                            Löschen
+                          </button>
+                        )}
                       </div>
                       <h2 className="text-5xl font-black mb-4 leading-tight tracking-tight">{selectedPin.title}</h2>
                       <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Kategorie: {selectedPin.category}</p>

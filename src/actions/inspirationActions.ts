@@ -42,6 +42,7 @@ export async function deleteInspirationAction(id: number) {
         userId: userId 
       } 
     });
+
     
     revalidatePath('/');
     return { success: true };
