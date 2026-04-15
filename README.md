@@ -66,10 +66,9 @@
    git clone <dein-repo-url>
    cd inspiration-board
 
-
 2. **Abhängigkeiten installieren** 
    ```bash
-bun install
+   bun install
 
 3. **Umgebungsvariablen anlegen**
 Erstelle eine Datei .env.local im Root-Ordner:
