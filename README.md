@@ -84,8 +84,8 @@ Beim ersten Start wird automatisch sequelize.sync({ alter: true }) ausgeführt (
 
 5. **Entwicklungs-Server starten**
    ```bash
-bun run dev
-App läuft unter: http://localhost:3000
+   bun run dev
+   App läuft unter: http://localhost:3000
 
 
 ## 📸 Wie die App funktioniert
